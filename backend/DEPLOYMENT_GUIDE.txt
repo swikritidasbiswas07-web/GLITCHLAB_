@@ -1,0 +1,74 @@
+GLITCHLAB_ — Round 2 Deployment Hardening
+=========================================
+
+WHAT TO REPLACE
+  backend/main.py                 <- main.py
+  backend/requirements.txt        <- requirements.txt
+
+WHAT TO ADD
+  backend/deployment_guard.py     <- deployment_guard.py
+  backend/test_deployment.py      <- test_deployment.py
+
+KEEP EXISTING FILES
+  backend/governance_lab.py, intelligence.py, smart_patch.py
+  backend/.env, backend/glitchlab.db
+  frontend/ (unchanged)
+
+IMPORTANT: MAKE A BACKUP of your backend directory (especially glitchlab.db)
+before replacing code. The normal local database path is unchanged.
+
+LOCAL TEST
+  cd "C:\Users\suhit\Downloads\GLITCHLAB_\glitchlab_\backend"
+  .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+  .\.venv\Scripts\python.exe -m pytest test_deployment.py test_governance_lab.py -v
+  .\.venv\Scripts\python.exe -m uvicorn main:app --reload --port 8000
+
+  Test http://127.0.0.1:8000/health
+  By default GLITCHLAB_DEMO_MODE=local. Existing local data and URLs continue working.
+
+PUBLIC HOSTING (WHEN YOU ARE READY)
+  Environment variables on BACKEND host:
+    GLITCHLAB_DEMO_MODE=public
+    GLITCHLAB_ALLOWED_ORIGINS=https://YOUR-FRONTEND-DOMAIN.example
+    GLITCHLAB_DB_PATH=/path/to/actual/persistent/volume/glitchlab.db
+    GEMINI_API_KEY=<set privately in hosting dashboard, never commit>
+    GLITCHLAB_AI_MODEL=<your known-working Gemini model>
+
+  BACKEND build/install command:
+    pip install -r requirements.txt
+
+  BACKEND start command:
+    uvicorn main:app --host 0.0.0.0 --port $PORT
+
+  FRONTEND environment variable (Vite build time):
+    VITE_API_BASE_URL=https://YOUR-BACKEND-DOMAIN.example
+  FRONTEND build command:
+    npm ci && npm run build
+  FRONTEND output directory:
+    dist
+
+  Add the exact frontend HTTPS origin to GLITCHLAB_ALLOWED_ORIGINS.
+  Do NOT include trailing slash or paths. Multiple origins: comma separated.
+  Public mode fails fast unless explicit HTTPS origins and GLITCHLAB_DB_PATH
+  are provided. A server-local temporary filesystem is NOT persistent hosting.
+  Ensure your hosting plan supports an actually persistent mounted disk.
+  SQLite is intended for a SINGLE backend instance. Do not scale to multiple
+  independent application instances using separate disks.
+
+SECURITY AND PRODUCT LIMITATIONS
+  - NO LOGIN, AUTHENTICATION, USER ISOLATION or OWNER PERMISSIONS.
+  - All records in the shared demo may be visible/editable to visitors.
+  - Do NOT upload confidential, private or real personal records.
+  - CORS protects browser origin access, NOT the underlying public API.
+  - Limits are process-local: hosting-provider/WAF rate limits also recommended.
+  - Public demo request limit: 120 requests/min/IP; request body <= 2.3 MB.
+  - AI API calls are billable and currently open to public visitors. Consider
+    restricting access or disabling AI on a widely shared public instance.
+  - If storage is restarted or replaced without a persistent volume, data is lost.
+
+SAFETY NET
+  If the new backend fails to start, check startup errors:
+   * Missing python-dotenv -> install requirements.txt
+   * Public demo configuration -> set all 3 required GLITCHLAB_ variables
+   * Database permissions -> check GLITCHLAB_DB_PATH directory writable
+  For rollback, restore your backed-up main.py and requirements.txt.
