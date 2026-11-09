@@ -1,6 +1,6 @@
 """GLITCHLAB: explainable, deterministic pre-publication checks.
 Demo intentionally uses SQLite and a single isolated demonstration workspace.
-No authentication or tenant isolation is claimed: do not put sensitive data here.
+Sign-in sessions protect API access; all users still share demo data. Do not put sensitive data here.
 """
 from __future__ import annotations
 from datetime import datetime, timezone
@@ -20,6 +20,7 @@ from uuid import uuid4
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from deployment_guard import DemoGuard, demo_mode, allowed_origins
+from auth import AuthGuard, install as install_auth
 from pydantic import BaseModel, Field
 
 ROOT = Path(__file__).parent
@@ -36,10 +37,11 @@ if MODE == 'public' and not _DB_OVERRIDE:
 DB.parent.mkdir(parents=True, exist_ok=True)
 app = FastAPI(title="GLITCHLAB_ API", version="0.3.0")
 # Middleware order: CORS wraps the guard so even limit/error replies have CORS headers.
+app.add_middleware(AuthGuard)
 app.add_middleware(DemoGuard, public=(MODE == 'public'))
 app.add_middleware(CORSMiddleware, allow_origins=ORIGINS,
                    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-                   allow_headers=["Content-Type"])
+                   allow_headers=["Content-Type", "Authorization"])
 
 @contextmanager
 def db():
@@ -117,6 +119,7 @@ def initialize():
             for code,category,title,explanation,source,pattern,replacement in SEEDS:
                 con.execute("""INSERT INTO rules (id, code, category, title, explanation, source, pattern, replacement, active, version, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)""",(ident(),code,category,title,explanation,source,pattern,replacement,1,1,now()))
 initialize()
+app.include_router(install_auth(db))
 
 CHANNELS = ("social", "email", "website", "general")
 

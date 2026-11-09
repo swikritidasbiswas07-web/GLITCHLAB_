@@ -62,7 +62,11 @@ class EndpointTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             with patch.object(main,'DB',Path(temp)/'demo.db'):
                 main.initialize()
+                import auth
+                auth.install(main.db)
                 client=TestClient(main.app)
+                from conftest import login_headers
+                client.headers.update(login_headers(client))
                 source=client.post('/sources/import',files={'file':('facts.txt',SRC[0]['content'].encode('utf8'),'text/plain')})
                 self.assertEqual(source.status_code,201,source.text)
                 source_id=source.json()['id']
