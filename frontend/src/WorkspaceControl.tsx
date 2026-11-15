@@ -101,7 +101,7 @@ export default function WorkspaceControl({focusDraft}:{focusDraft?:{workspaceId:
   setMemberId('');await refreshWorkspace(active);setSuccess('Workspace membership updated.');
  });}
  return <section className="wc-root" aria-label="Workspace Control">
-  <div className="wc-banner"><ShieldCheck size={20}/><div><strong>ISOLATED WORKSPACE LAB · LOCAL BUILD</strong><p>This page uses the new authenticated /workspaces API. The original Content Lab remains on legacy demonstration routes. Workspace Draft Radar uses authorized PostgreSQL endpoints in the workspace-only preview. Do not enter confidential data.</p></div></div>
+  <div className="wc-banner"><ShieldCheck size={20}/><div><strong>PUBLIC JUDGE SANDBOX · READ-ONLY</strong><p>Explore authenticated workspace information, member permissions, and policy-governance records. This public demonstration uses synthetic data and prevents changes to the workspace.</p></div></div>
   {error&&<div className="wc-message wc-error" role="alert"><AlertTriangle size={16}/>{error}<button onClick={()=>setError('')} aria-label="Dismiss error">×</button></div>}
   {success&&<div className="wc-message wc-success" role="status"><CheckCircle2 size={16}/>{success}<button onClick={()=>setSuccess('')} aria-label="Dismiss notice">×</button></div>}
   <div className="wc-toolbar"><div><span className="kicker">AUTHORIZED ORGANIZATIONS</span><h2>Workspace Control</h2><p>Switch only between organizations your signed-in account belongs to.</p></div><button type="button" className="ghost" disabled={busy} onClick={()=>void execute(async()=>{await refreshWorkspaces();if(active)await refreshWorkspace(active)})}><RefreshCw size={15}/> Refresh</button></div>
