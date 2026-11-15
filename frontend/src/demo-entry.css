@@ -1,0 +1,18 @@
+/* GLITCHLAB_ — original, responsive, four-persona local demo entry. */
+.gl-demo-entry {width:min(100%,610px);margin:0 auto 24px;padding:22px 0 8px;color:#173344}
+.gl-demo-entry h2 {font:700 clamp(27px,3vw,39px)/1.1 'Fraunces',Georgia,serif;margin:12px 0 10px;color:#173344}
+.gl-demo-entry>p {font-size:13px;line-height:1.7;color:#4e6c7c;margin:0 0 22px}
+.gl-demo-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.gl-demo-person {min-width:0;display:flex;flex-direction:column;align-items:stretch;gap:9px;text-align:left;padding:17px;border:2px solid #204256;background:#fcfdfb;color:#173344;box-shadow:4px 4px 0 #204256;cursor:pointer;transition:transform .15s,background .15s}
+.gl-demo-person:hover:not(:disabled),.gl-demo-person:focus-visible {background:#def0f1;transform:translate(-2px,-2px)}
+.gl-demo-person:disabled {opacity:.52;cursor:wait}
+.gl-demo-person-top {display:flex;align-items:center;justify-content:space-between;color:#2c637d}
+.gl-demo-avatar {display:grid;place-items:center;width:41px;height:41px;border:1px solid #285970;background:#c3e3e6;font-size:14px;font-weight:800}
+.gl-demo-person strong {font:700 21px/1.2 'Fraunces',Georgia,serif;color:#173344}
+.gl-demo-role {font:800 10px/1.45 'DM Sans',sans-serif;letter-spacing:.6px;color:#4b7383}
+.gl-demo-person-action {margin-top:auto;padding-top:10px;border-top:1px solid #c3dce2;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:11px;font-weight:800;letter-spacing:.4px}
+.gl-demo-entry .gl-demo-note {display:flex;align-items:start;gap:8px;font-size:11px;margin:19px 0;color:#54727f}
+.gl-demo-entry .gl-demo-note svg {flex-shrink:0}
+.gl-demo-regular {border:none;border-bottom:1px solid #346e87;background:transparent;display:flex;align-items:center;gap:8px;color:#17425a;padding:7px 0;font-size:11px;letter-spacing:.7px;font-weight:800;cursor:pointer}
+.gl-demo-entry .gl-login-error {margin:16px 0 8px}
+@media(max-width:650px){.gl-demo-grid{grid-template-columns:1fr}.gl-demo-entry{padding:16px 0 22px}}

@@ -1,0 +1,20 @@
+.tb-root{margin-top:28px;border:2px solid var(--ink);padding:clamp(16px,2vw,25px);background:#f6fbfa;box-shadow:5px 5px 0 var(--ink);min-width:0}
+.tb-header,.tb-panelhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.tb-header h3{display:flex;gap:10px;align-items:center;font:700 26px Fraunces,Georgia,serif;margin:9px 0 5px}
+.tb-header p,.tb-muted{font-size:12px;color:var(--muted);line-height:1.6}
+.tb-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px;margin-top:18px;align-items:start}
+.tb-panel{min-width:0;border:1px solid var(--line);background:white;padding:18px}
+.tb-panelhead h4{display:flex;align-items:center;gap:8px;margin:0;font:700 17px Fraunces,Georgia,serif}
+.tb-panelhead label{display:flex;align-items:center;gap:6px}.tb-panelhead select{max-width:180px;font-size:11px;padding:8px}
+.tb-timeline{list-style:none;padding:0;margin:20px 0;display:grid;gap:16px;max-height:480px;overflow:auto}
+.tb-timeline li{display:flex;gap:13px;border-bottom:1px solid var(--line);padding-bottom:14px;min-width:0}
+.tb-timeline li>div{min-width:0}.tb-timeline strong{font-size:13px}.tb-event{font-weight:700;font-size:12px;margin:4px 0}
+.tb-timeline small{color:var(--ocean);font-size:11px}.tb-timeline p{font-size:11px;line-height:1.6;margin:7px 0 0;overflow-wrap:anywhere}
+.tb-initials{display:grid;place-items:center;background:var(--aqua);border:1px solid var(--ink);width:34px;height:34px;flex:none;font-weight:800;font-size:10px}
+.tb-compareselect{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:17px 0}.tb-compareselect label{font-size:11px;font-weight:800}
+.tb-compareselect select{width:100%;margin-top:6px;font-size:12px}
+.tb-diffgrid{display:grid;gap:11px;margin-top:20px}.tb-diffgrid article{min-width:0;border:1px solid var(--line);padding:12px}
+.tb-diffgrid h5{margin:0 0 11px}.tb-difftext{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.7 'DM Sans',sans-serif}
+.tb-removed{background:#f8dad7;color:#8a2921;text-decoration:line-through}.tb-added{background:#d7f2df;color:#145c35}
+.tb-error{background:#fee0dd;color:#802d28;padding:12px;font-size:12px}
+@media(max-width:1100px){.tb-grid{grid-template-columns:1fr}}@media(max-width:550px){.tb-header button{width:100%}}

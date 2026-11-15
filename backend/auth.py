@@ -143,7 +143,7 @@ class AuthGuard:
             return await self.app(scope, receive, send)
         path = scope.get('path', '')
         if (scope.get('method') == 'OPTIONS' or path == '/health'
-            or path in {'/auth/login', '/auth/register'} or path.startswith('/docs')
+            or path in {'/auth/login', '/auth/register', '/auth/demo/personas', '/auth/demo/enter'} or path.startswith('/docs')
             or path.startswith('/openapi') or path.startswith('/redoc')):
             return await self.app(scope, receive, send)
         headers = {k.lower(): v for k, v in scope.get('headers', [])}

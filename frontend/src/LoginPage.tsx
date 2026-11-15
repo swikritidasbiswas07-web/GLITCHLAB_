@@ -1,8 +1,9 @@
+import './demo-entry.css';
 
 import {useEffect, useState, type FormEvent} from 'react';
 import {
   ArrowRight, Eye, EyeOff, LockKeyhole,
-  Mail, ShieldCheck, Sparkles
+  Mail, ShieldCheck, Sparkles, UserRound, ClipboardCheck, FilePenLine, Settings2
 } from 'lucide-react';
 import {
   API_BASE, authFetch, clearToken, getToken, saveToken
@@ -18,6 +19,8 @@ type Session = {
   token:string;
   user:User;
 };
+
+type DemoPersona = {id:string;name:string;role:string;workspace:string};
 
 type Props = {
   onAuthenticated:(user:User, restored:boolean)=>void;
@@ -83,6 +86,35 @@ export default function LoginPage({onAuthenticated}:Props) {
   const [show,setShow] = useState(false);
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState('');
+  const [demoPersonas,setDemoPersonas] = useState<DemoPersona[]>([]);
+  const [demoBusy,setDemoBusy] = useState<string|null>(null);
+  const [showAccountForm,setShowAccountForm] = useState(false);
+
+  useEffect(()=>{
+    let active=true;
+    fetch(`${API_BASE}/auth/demo/personas`)
+      .then(async response=>response.ok?response.json():null)
+      .then(payload=>{if(active&&Array.isArray(payload?.personas))setDemoPersonas(payload.personas);})
+      .catch(()=>{});
+    return ()=>{active=false;};
+  },[]);
+
+  async function enterDemo(identity:string){
+    setDemoBusy(identity);setError('');
+    try {
+      const response=await fetch(`${API_BASE}/auth/demo/enter`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({identity})
+      });
+      const data=await response.json().catch(()=>({detail:'Demo entry failed'}));
+      if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:'Demo entry failed');
+      const session=data as Session;
+      saveToken(session.token);
+      onAuthenticated(session.user,false);
+    }catch(ex){setError(ex instanceof Error?ex.message:'Demo entry failed');}
+    finally{setDemoBusy(null);}
+  }
+
 
   useEffect(()=>{
     const token = getToken();
@@ -208,7 +240,27 @@ export default function LoginPage({onAuthenticated}:Props) {
           <small>BRAND RULES, UNDER THE MICROSCOPE</small>
         </div>
 
-        <div className="gl-login-card">
+        {demoPersonas.length>0 && <section className="gl-demo-entry" aria-label="Explore by role">
+          <div className="gl-login-label"><span className="gl-bullet"/> THE FOUR PERSPECTIVES</div>
+          <h2>Choose your place in the lab.</h2>
+          <p>Explore Nivara Studio as a creator, editor, reviewer, or administrator. Each card starts a real local demonstration session.</p>
+          <div className="gl-demo-grid">
+            {demoPersonas.map(person=>{
+              const Icon=person.role==='creator'?FilePenLine:person.role==='editor'?Settings2:person.role==='reviewer'?ClipboardCheck:UserRound;
+              return <button type="button" key={person.id} className="gl-demo-person" onClick={()=>void enterDemo(person.id)} disabled={Boolean(demoBusy)||checking}>
+                <span className="gl-demo-person-top"><span className="gl-demo-avatar">{person.name.split(' ').map(x=>x[0]).join('')}</span><Icon size={19}/></span>
+                <strong>{person.name}</strong><span className="gl-demo-role">{person.role.toUpperCase()} · {person.workspace}</span>
+                <span className="gl-demo-person-action">{demoBusy===person.id?'ENTERING…':'ENTER AS '+person.name.split(' ')[0].toUpperCase()} <ArrowRight size={15}/></span>
+              </button>;
+            })}
+          </div>
+          {error&&<p className="gl-login-error" role="alert">{error}</p>}
+          <p className="gl-demo-note"><ShieldCheck size={16}/> Local demonstration only. Public one-click admin access is disabled.</p>
+          <button type="button" className="gl-demo-regular" onClick={()=>{setShowAccountForm(v=>!v);setError('');}}>
+            {showAccountForm?'HIDE ACCOUNT FORM':'SIGN IN WITH YOUR OWN ACCOUNT'} <ArrowRight size={16}/>
+          </button>
+        </section>}
+        {(demoPersonas.length===0||showAccountForm)&&        <div className="gl-login-card">
           <div className="gl-login-label">
             <span className="gl-bullet"/>
             AUTHORIZED WORKSPACE ENTRY
@@ -347,10 +399,12 @@ export default function LoginPage({onAuthenticated}:Props) {
 
           <p className="gl-login-disclosure">
             <ShieldCheck size={16}/>
-            Demo accounts share the same synthetic workspace.
+            Local demo personas use isolated workspace APIs; legacy shared demo routes remain separate.
             Do not upload private or confidential materials.
           </p>
         </div>
+
+        }
 
         <div className="gl-login-copyright">
           © 2026 AXIOM LABS

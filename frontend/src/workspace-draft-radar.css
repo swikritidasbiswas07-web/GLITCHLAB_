@@ -1,0 +1,271 @@
+
+/* =========================================================
+   GLITCHLAB_ — WORKSPACE DRAFT RADAR
+   Build 05G.2 | PostgreSQL Workspace Edition
+   Ocean-Ink Editorial Design
+   ========================================================= */
+
+/* Main layout */
+
+.wdr-root {
+  display: grid;
+  gap: 22px;
+}
+
+/* Header */
+
+.wdr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.wdr-header h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  color: #153548;
+  margin: 8px 0;
+}
+
+.wdr-header p,
+.wdr-note {
+  color: #567282;
+}
+
+.wdr-header button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Search and filters */
+
+.wdr-controls {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 0.8fr 1fr;
+  gap: 12px;
+}
+
+.wdr-controls label {
+  display: grid;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #17394c;
+}
+
+.wdr-controls input,
+.wdr-controls select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 2px solid #17394c;
+  border-radius: 0;
+  background: #f8fbfb;
+  color: #153548;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.wdr-controls input:focus,
+.wdr-controls select:focus {
+  outline: 2px solid #438fa6;
+  outline-offset: 2px;
+}
+
+/* Search field */
+
+.wdr-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.wdr-search svg {
+  position: absolute;
+  left: 12px;
+  color: #537d8a;
+  pointer-events: none;
+}
+
+.wdr-search input {
+  padding-left: 38px;
+}
+
+/* Summary counters */
+
+.wdr-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wdr-summary span {
+  padding: 14px 18px;
+  border: 1px solid #b4d1d8;
+  background: #e3f1f2;
+  color: #17394c;
+}
+
+.wdr-summary strong {
+  margin-right: 6px;
+  font-size: 21px;
+}
+
+/* Table container */
+
+.wdr-table-wrap {
+  overflow-x: auto;
+  border: 2px solid #17394c;
+  background: #ffffff;
+  box-shadow: 5px 5px 0 #17394c;
+}
+
+/* Draft table */
+
+.wdr-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  text-align: left;
+  color: #17394c;
+}
+
+.wdr-table th {
+  padding: 16px 12px;
+  background: #d3e8ed;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wdr-table td {
+  padding: 16px 12px;
+  border-top: 1px solid #cee0e4;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.wdr-table tbody tr:hover {
+  background: #f0f8f9;
+}
+
+.wdr-table td small {
+  display: block;
+  margin-top: 6px;
+  color: #6a8a99;
+}
+
+/* Review states */
+
+.wdr-state {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.wdr-approved {
+  color: #176448;
+}
+
+.wdr-issues {
+  color: #a23736;
+}
+
+.wdr-clear {
+  color: #176448;
+}
+
+.wdr-unknown {
+  color: #994e31;
+}
+
+/* Open draft button */
+
+.wdr-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border: 1.5px solid #16394c;
+  background: #b9dfe4;
+  color: #153548;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.wdr-open:hover {
+  background: #a2d4dd;
+  transform: translateY(-1px);
+}
+
+.wdr-open:focus-visible {
+  outline: 2px solid #438fa6;
+  outline-offset: 3px;
+}
+
+/* Explanatory note */
+
+.wdr-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.wdr-note svg {
+  flex-shrink: 0;
+}
+
+/* Errors */
+
+.wdr-error {
+  padding: 12px;
+  border: 1px solid #bf8d91;
+  background: #f5e4e4;
+  color: #94373c;
+}
+
+/* Empty state */
+
+.wdr-empty {
+  padding: 28px;
+  border: 1px solid #b4d1d8;
+  color: #67808d;
+  text-align: center;
+}
+
+/* Responsive layout */
+
+@media (max-width: 900px) {
+  .wdr-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 570px) {
+  .wdr-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .wdr-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .wdr-header h2 {
+    font-size: 28px;
+  }
+
+  .wdr-summary span {
+    flex: 1 1 140px;
+  }
+}
+.wdr-legacy {
+  color: #916125;
+}
