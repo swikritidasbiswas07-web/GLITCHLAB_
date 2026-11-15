@@ -1,9 +1,8 @@
 import './demo-entry.css';
 
-import {useEffect, useState, type FormEvent} from 'react';
+import {useEffect, useState} from 'react';
 import {
-  ArrowRight, Eye, EyeOff, LockKeyhole,
-  Mail, ShieldCheck, Sparkles, UserRound, ClipboardCheck, FilePenLine, Settings2
+  ArrowRight, ShieldCheck, Sparkles, UserRound, ClipboardCheck, FilePenLine, Settings2
 } from 'lucide-react';
 import {
   API_BASE, authFetch, clearToken, getToken, saveToken
@@ -78,24 +77,19 @@ function Conch({className=''}:{className?:string}) {
 }
 
 export default function LoginPage({onAuthenticated}:Props) {
-  const [mode,setMode] = useState<'login'|'register'>('login');
   const [checking,setChecking] = useState(Boolean(getToken()));
-  const [email,setEmail] = useState('');
-  const [name,setName] = useState('');
-  const [password,setPassword] = useState('');
-  const [show,setShow] = useState(false);
-  const [busy,setBusy] = useState(false);
   const [error,setError] = useState('');
   const [demoPersonas,setDemoPersonas] = useState<DemoPersona[]>([]);
   const [demoBusy,setDemoBusy] = useState<string|null>(null);
-  const [showAccountForm,setShowAccountForm] = useState(false);
+  const [personasLoaded,setPersonasLoaded] = useState(false);
 
   useEffect(()=>{
     let active=true;
     fetch(`${API_BASE}/auth/demo/personas`)
       .then(async response=>response.ok?response.json():null)
       .then(payload=>{if(active&&Array.isArray(payload?.personas))setDemoPersonas(payload.personas);})
-      .catch(()=>{});
+      .catch(()=>{})
+      .finally(()=>{if(active)setPersonasLoaded(true);});
     return ()=>{active=false;};
   },[]);
 
@@ -135,56 +129,6 @@ export default function LoginPage({onAuthenticated}:Props) {
       .catch(()=>clearToken())
       .finally(()=>setChecking(false));
   },[onAuthenticated]);
-
-  async function submit(e:FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-
-    try {
-      const response = await fetch(
-        `${API_BASE}/auth/${mode==='login'?'login':'register'}`,
-        {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(
-            mode==='login'
-              ? {email,password}
-              : {email,password,display_name:name}
-          )
-        }
-      );
-
-      const data = await response.json().catch(()=>({
-        detail:'Unable to reach server.'
-      }));
-
-      if(!response.ok) {
-        throw new Error(
-          typeof data.detail==='string'
-            ? data.detail
-            : Array.isArray(data.detail)
-              ? data.detail.map((x:{msg:string})=>x.msg).join('; ')
-              : 'Sign-in failed'
-        );
-      }
-
-      const session = data as Session;
-      saveToken(session.token);
-
-      // A fresh login or registration displays the introduction.
-      onAuthenticated(session.user,false);
-
-    } catch(ex) {
-      setError(
-        ex instanceof Error
-          ? ex.message
-          : 'Unable to sign in.'
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
 
   return (
     <div className="gl-login">
@@ -243,7 +187,7 @@ export default function LoginPage({onAuthenticated}:Props) {
         {demoPersonas.length>0 && <section className="gl-demo-entry" aria-label="Explore by role">
           <div className="gl-login-label"><span className="gl-bullet"/> THE FOUR PERSPECTIVES</div>
           <h2>Choose your place in the lab.</h2>
-          <p>Explore Nivara Studio as a creator, editor, reviewer, or administrator. Each card starts a real local demonstration session.</p>
+          <p>Step into Nivara Studio through four distinct perspectives. Explore a populated, read-only workspace with governance workflows, evidence trails, and review decisions.</p>
           <div className="gl-demo-grid">
             {demoPersonas.map(person=>{
               const Icon=person.role==='creator'?FilePenLine:person.role==='editor'?Settings2:person.role==='reviewer'?ClipboardCheck:UserRound;
@@ -255,156 +199,20 @@ export default function LoginPage({onAuthenticated}:Props) {
             })}
           </div>
           {error&&<p className="gl-login-error" role="alert">{error}</p>}
-          <p className="gl-demo-note"><ShieldCheck size={16}/> Local demonstration only. Public one-click admin access is disabled.</p>
-          <button type="button" className="gl-demo-regular" onClick={()=>{setShowAccountForm(v=>!v);setError('');}}>
-            {showAccountForm?'HIDE ACCOUNT FORM':'SIGN IN WITH YOUR OWN ACCOUNT'} <ArrowRight size={16}/>
-          </button>
+          <p className="gl-demo-note"><ShieldCheck size={16}/> Secure, read-only demonstration. All accounts, policies, and evidence are synthetic.</p>
+          <a className="gl-demo-regular" href="https://glitchlab-eight.vercel.app/" target="_blank" rel="noopener noreferrer">
+            ENTER GLITCHLAB_ WITH YOUR OWN ACCOUNT <ArrowRight size={16}/>
+          </a>
         </section>}
-        {(demoPersonas.length===0||showAccountForm)&&        <div className="gl-login-card">
-          <div className="gl-login-label">
-            <span className="gl-bullet"/>
-            AUTHORIZED WORKSPACE ENTRY
-          </div>
-
-          <h2>
-            {mode==='login'
-              ? 'Welcome back.'
-              : 'Make your mark.'}
-          </h2>
-
-          <p className="gl-login-description">
-            {mode==='login'
-              ? 'Your workspace is ready when you are.'
-              : 'Create an account to explore the shared demonstration lab.'}
-          </p>
-
-          <div
-            className="gl-auth-tabs"
-            role="group"
-            aria-label="Authentication method"
-          >
-            <button
-              type="button"
-              className={mode==='login'?'selected':''}
-              onClick={()=>{
-                setMode('login');
-                setError('');
-              }}
-            >
-              SIGN IN
-            </button>
-
-            <button
-              type="button"
-              className={mode==='register'?'selected':''}
-              onClick={()=>{
-                setMode('register');
-                setError('');
-              }}
-            >
-              CREATE ACCOUNT
-            </button>
-          </div>
-
-          <form onSubmit={submit}>
-
-            {mode==='register'&&(
-              <label className="gl-form-field">
-                YOUR NAME
-                <input
-                  autoComplete="name"
-                  required
-                  minLength={2}
-                  maxLength={70}
-                  value={name}
-                  onChange={e=>setName(e.target.value)}
-                  placeholder="e.g. Axiom Reviewer"
-                />
-              </label>
-            )}
-
-            <label className="gl-form-field">
-              EMAIL ADDRESS
-              <div className="gl-input-wrap">
-                <Mail aria-hidden="true" size={17}/>
-                <input
-                  autoComplete="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={e=>setEmail(e.target.value)}
-                  placeholder="you@studio.com"
-                />
-              </div>
-            </label>
-
-            <label className="gl-form-field">
-              PASSWORD
-              <div className="gl-input-wrap">
-                <LockKeyhole aria-hidden="true" size={17}/>
-
-                <input
-                  autoComplete={
-                    mode==='login'
-                      ? 'current-password'
-                      : 'new-password'
-                  }
-                  type={show?'text':'password'}
-                  minLength={mode==='register'?12:undefined}
-                  required
-                  value={password}
-                  onChange={e=>setPassword(e.target.value)}
-                  placeholder={
-                    mode==='register'
-                      ? 'At least 12 characters'
-                      : 'Enter your password'
-                  }
-                />
-
-                <button
-                  type="button"
-                  className="gl-show"
-                  aria-label={show?'Hide password':'Show password'}
-                  onClick={()=>setShow(!show)}
-                >
-                  {show
-                    ? <EyeOff size={17}/>
-                    : <Eye size={17}/>}
-                </button>
-              </div>
-            </label>
-
-            {error&&(
-              <p className="gl-login-error" role="alert">
-                {error}
-              </p>
-            )}
-
-            <button
-              className="gl-enter"
-              type="submit"
-              disabled={busy||checking}
-            >
-              {checking
-                ? 'CHECKING SESSION…'
-                : busy
-                  ? 'PLEASE WAIT…'
-                  : mode==='login'
-                    ? 'ENTER GLITCHLAB'
-                    : 'CREATE ACCOUNT & ENTER'}
-              <ArrowRight size={19}/>
-            </button>
-
-          </form>
-
-          <p className="gl-login-disclosure">
-            <ShieldCheck size={16}/>
-            Local demo personas use isolated workspace APIs; legacy shared demo routes remain separate.
-            Do not upload private or confidential materials.
-          </p>
-        </div>
-
-        }
+        {demoPersonas.length===0 && <section className="gl-demo-entry" aria-label="Judge demonstration status">
+          <div className="gl-login-label"><span className="gl-bullet"/> THE FOUR PERSPECTIVES</div>
+          <h2>Choose your place in the lab.</h2>
+          <p>{personasLoaded ? 'The judge demonstration is temporarily unavailable. Please try again shortly.' : 'Loading the four demo perspectives…'}</p>
+          <p className="gl-demo-note"><ShieldCheck size={16}/> This is a read-only judging sandbox. Personal sign-in and registration are hosted separately.</p>
+          <a className="gl-demo-regular" href="https://glitchlab-eight.vercel.app/" target="_blank" rel="noopener noreferrer">
+            ENTER GLITCHLAB_ WITH YOUR OWN ACCOUNT <ArrowRight size={16}/>
+          </a>
+        </section>}
 
         <div className="gl-login-copyright">
           © 2026 AXIOM LABS

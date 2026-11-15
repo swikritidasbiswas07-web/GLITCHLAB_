@@ -1,4 +1,4 @@
-/* GLITCHLAB_ — original, responsive, four-persona local demo entry. */
+/* GLITCHLAB_ — responsive, public read-only judge demo entry. */
 .gl-demo-entry {width:min(100%,610px);margin:0 auto 24px;padding:22px 0 8px;color:#173344}
 .gl-demo-entry h2 {font:700 clamp(27px,3vw,39px)/1.1 'Fraunces',Georgia,serif;margin:12px 0 10px;color:#173344}
 .gl-demo-entry>p {font-size:13px;line-height:1.7;color:#4e6c7c;margin:0 0 22px}
@@ -16,3 +16,7 @@
 .gl-demo-regular {border:none;border-bottom:1px solid #346e87;background:transparent;display:flex;align-items:center;gap:8px;color:#17425a;padding:7px 0;font-size:11px;letter-spacing:.7px;font-weight:800;cursor:pointer}
 .gl-demo-entry .gl-login-error {margin:16px 0 8px}
 @media(max-width:650px){.gl-demo-grid{grid-template-columns:1fr}.gl-demo-entry{padding:16px 0 22px}}
+
+/* Account entry leaves the read-only judge demo and opens the separate original app. */
+.gl-demo-regular {width:fit-content;text-decoration:none}
+.gl-demo-regular:hover,.gl-demo-regular:focus-visible {color:#287d96}
